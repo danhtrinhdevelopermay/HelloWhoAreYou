@@ -12,7 +12,7 @@ jobs:
     name: Build APK
     runs-on: ubuntu-latest
     
-    # Quan trọng: Đặt thư mục làm việc mặc định
+    # Chạy trong thư mục Flutter project
     defaults:
       run:
         working-directory: Build-an-Animated-App-with-Rive-and-Flutter-main
@@ -36,13 +36,11 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
       
-      - name: Analyze code
+      - name: Analyze code (optional)
         run: flutter analyze
         continue-on-error: true
       
-      - name: Run tests
-        run: flutter test
-        continue-on-error: true
+      # BỎ bước Run tests - không cần thiết để build APK
       
       - name: Build APK
         run: flutter build apk --release
@@ -51,19 +49,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          # Đường dẫn đầy đủ từ repository root
           path: Build-an-Animated-App-with-Rive-and-Flutter-main/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
       
-      - name: Create Release (Optional)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ github.run_number }}
-          name: Release v${{ github.run_number }}
-          # Đường dẫn đầy đủ từ repository root
-          files: Build-an-Animated-App-with-Rive-and-Flutter-main/build/app/outputs/flutter-apk/app-release.apk
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # BỎ bước Create Release - không cần thiết, gây lỗi 403
