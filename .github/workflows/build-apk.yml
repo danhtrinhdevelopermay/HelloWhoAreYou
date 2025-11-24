@@ -12,6 +12,11 @@ jobs:
     name: Build APK
     runs-on: ubuntu-latest
     
+    # Quan trọng: Đặt thư mục làm việc mặc định
+    defaults:
+      run:
+        working-directory: Build-an-Animated-App-with-Rive-and-Flutter-main
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -46,5 +51,19 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          # Đường dẫn đầy đủ từ repository root
+          path: Build-an-Animated-App-with-Rive-and-Flutter-main/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
+      
+      - name: Create Release (Optional)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          # Đường dẫn đầy đủ từ repository root
+          files: Build-an-Animated-App-with-Rive-and-Flutter-main/build/app/outputs/flutter-apk/app-release.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
